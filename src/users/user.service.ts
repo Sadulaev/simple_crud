@@ -23,11 +23,22 @@ export class UserService {
         return { id: result.id };
     }
 
-    async getUser(id: number, getUserQueryDto: GetUserQueryDto) {
-        const foundedUsers = await this.usersRepository.find({ where: { id, ...getUserQueryDto } })
+    async getAllUsers(query: GetUserQueryDto) {
+        const foundedUsers = await this.usersRepository.find({ where: query })
 
         if (!foundedUsers.length) {
-            throw new HttpException('Users not found', HttpStatus.BAD_REQUEST)
+            throw new HttpException('Users not found', HttpStatus.NOT_FOUND)
+        }
+
+        return { users: foundedUsers }
+    }
+
+
+    async getUser(id: number,) {
+        const foundedUsers = await this.usersRepository.find({ where: { id } })
+
+        if (!foundedUsers.length) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND)
         }
 
         return { users: foundedUsers }
@@ -45,19 +56,18 @@ export class UserService {
         return this.usersRepository.findOne({ where: { id } });
     }
 
-    async deleteUser(id?: string) {
-        if (id) {
-            const user = await this.usersRepository.findOne({ where: { id: +id } });
-            if (!user) {
-                throw new NotFoundException(`User with ID ${id} not found`);
-            }
-
-            // Удаляем пользователя и возвращаем данные удаленного объекта
-            // особенность команды remove (альтернатива delete)
-            return await this.usersRepository.remove(user); 
-        } else {
-            await this.usersRepository.delete({})
-            return;
+    async deleteUser(id: number) {
+        const user = await this.usersRepository.findOne({ where: { id: +id } });
+        if (!user) {
+            throw new NotFoundException(`User with ID ${id} not found`);
         }
+        // Удаляем пользователя и возвращаем данные удаленного объекта
+        // особенность команды remove (альтернатива delete)
+        return await this.usersRepository.remove(user);
+    }
+
+    async deleteAllUsers () {
+        await this.usersRepository.delete({});
+        return;
     }
 }

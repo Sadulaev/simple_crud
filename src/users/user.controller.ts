@@ -15,12 +15,18 @@ export class UserController {
         return await this.userService.createUser(createUserDto);
     }
 
+    @Get('get')
+    async getAllUsers (
+        @Query() query: GetUserQueryDto
+    ) {
+        return await this.userService.getAllUsers(query)
+    }
+
     @Get('get/:id')
     async getUserById (
         @Param('id', ParseIntPipe) id: string,
-        @Query() query: GetUserQueryDto
     ) {
-        return await this.userService.getUser(+id, query)
+        return await this.userService.getUser(+id)
     }
 
     @Patch('update/:id')
@@ -31,8 +37,13 @@ export class UserController {
         return await this.userService.updateUser(+id, updateUserDto)
     }
 
+    @Delete('delete')
+    async deleteAllUsers () {
+        return await this.userService.deleteAllUsers()
+    }
+
     @Delete('delete/:id')
-    async deleteUserById (@Param('id') id: string) {
-        return await this.userService.deleteUser(id)
+    async deleteUserById (@Param('id', ParseIntPipe) id: string) {
+        return await this.userService.deleteUser(+id)
     }
 }
