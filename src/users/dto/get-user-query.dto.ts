@@ -6,7 +6,7 @@ export class GetUserQueryDto {
   role?: string;
 
   @IsOptional()
-  fullName?: string;
+  full_name?: string;
 
   @IsOptional()
   @Transform(({ value }) => +value)

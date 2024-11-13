@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { User } from "./user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -14,7 +14,7 @@ export class UserService {
 
     async createUser(createUserDto: CreateUserDto) {
         const newUser = new User;
-        newUser.fullName = createUserDto.fullName;
+        newUser.full_name = createUserDto.full_name;
         newUser.role = createUserDto.role;
         newUser.efficiency = createUserDto.efficiency;
 
@@ -26,24 +26,35 @@ export class UserService {
     async getUser(id: number, getUserQueryDto: GetUserQueryDto) {
         const foundedUsers = await this.usersRepository.find({ where: { id, ...getUserQueryDto } })
 
+        if (!foundedUsers.length) {
+            throw new HttpException('Users not found', HttpStatus.BAD_REQUEST)
+        }
+
         return { users: foundedUsers }
     }
 
     async updateUser(id: number, updateUserDto: UpdateUserDto) {
-        await this.usersRepository.update(id, updateUserDto);
-        const userAfterUpdate = await this.usersRepository.findOne({ where: { id } })
+        const user = await this.usersRepository.findOne({ where: { id } });
 
-        return userAfterUpdate;
+        if (!user) {
+            throw new NotFoundException(`User with ID ${id} not found`);
+        }
+
+        await this.usersRepository.update(id, updateUserDto);
+
+        return this.usersRepository.findOne({ where: { id } });
     }
 
     async deleteUser(id?: string) {
         if (id) {
             const user = await this.usersRepository.findOne({ where: { id: +id } });
             if (!user) {
-                throw new Error('User not found');
+                throw new NotFoundException(`User with ID ${id} not found`);
             }
+
             // Удаляем пользователя и возвращаем данные удаленного объекта
-            return await this.usersRepository.remove(user);
+            // особенность команды remove (альтернатива delete)
+            return await this.usersRepository.remove(user); 
         } else {
             await this.usersRepository.delete({})
             return;

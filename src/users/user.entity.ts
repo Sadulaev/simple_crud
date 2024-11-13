@@ -9,7 +9,7 @@ export class User {
     // т.к. назначется автоматически 
     // но для прозрачности кода написал
     @Column({type: 'varchar'})
-    fullName: string;
+    full_name: string;
 
     @Column({type: 'varchar'})
     role: string;

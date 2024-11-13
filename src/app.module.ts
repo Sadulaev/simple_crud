@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import config from './config';
 import { User } from './users/user.entity';
 import { ConfigModule } from '@nestjs/config';
+import { UserModule } from './users/user.module';
 
 console.log(config())
 
@@ -23,6 +24,7 @@ console.log(config())
       entities: [User],
       synchronize: true,
     }),
+    UserModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -10,12 +10,12 @@ export class UserController {
         private userService: UserService
     ) {}
 
-    @Post('/create')
+    @Post('create')
     async createUser (@Body() createUserDto: CreateUserDto) {
         return await this.userService.createUser(createUserDto);
     }
 
-    @Get('/get')
+    @Get('get/:id')
     async getUserById (
         @Param('id', ParseIntPipe) id: string,
         @Query() query: GetUserQueryDto
@@ -23,7 +23,7 @@ export class UserController {
         return await this.userService.getUser(+id, query)
     }
 
-    @Patch('/update')
+    @Patch('update/:id')
     async updateUser (
         @Param('id', ParseIntPipe) id: string,
         @Body() updateUserDto: UpdateUserDto
@@ -31,8 +31,8 @@ export class UserController {
         return await this.userService.updateUser(+id, updateUserDto)
     }
 
-    @Delete('/delete')
-    async deleteUserById (@Param() id: string) {
+    @Delete('delete/:id')
+    async deleteUserById (@Param('id') id: string) {
         return await this.userService.deleteUser(id)
     }
 }
