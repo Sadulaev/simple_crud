@@ -3,9 +3,16 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import config from './config';
+import { User } from './users/user.entity';
+import { ConfigModule } from '@nestjs/config';
+
+console.log(config())
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      load: [config],
+    }),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: config().database.host,
@@ -13,7 +20,7 @@ import config from './config';
       username: config().database.username,
       password: config().database.password,
       database: config().database.database,
-      entities: [],
+      entities: [User],
       synchronize: true,
     }),
   ],
